@@ -1,0 +1,30 @@
+version: '3.3'
+
+services:
+  flask_db:
+    build: ./mysql/
+    restart: always
+    env_file:
+      - ./env/db.env
+    ports:
+      - "3306:3306"
+    networks:
+      - flask_network
+    volumes:
+      - backup:/var/lib/mysql
+      # - ./mysql/schema.sql:docker-entrypoint-initdb.d/init.sql
+
+  flask_backend:
+    depends_on:
+      - flask_db
+    build: ./flask/
+    ports:
+      - "5000:5000"
+    restart: always
+    networks:
+      - flask_network
+
+networks:
+  flask_network:
+volumes:
+  backup: {}
